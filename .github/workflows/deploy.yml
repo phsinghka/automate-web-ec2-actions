@@ -17,8 +17,8 @@ jobs:
         uses: burnett01/rsync-deployments@5.1
         with: 
           switches: -avzr --delete
-          path: './*'
-          remote_path: '/var/www/html/website'
+          path: './web/*'
+          remote_path: '/var/www/html/'
           remote_host: 18.221.152.255
           remote_user: ubuntu
           remote_key: "${{ secrets.SSH_PRIVATE_KEY }}"
