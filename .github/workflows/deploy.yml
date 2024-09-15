@@ -1,0 +1,33 @@
+name: Deploy ec2 website to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy: 
+    name: Deploy Website
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Sync files with ec2
+        uses: burnett01/rsync-deployments@5.1
+        with: 
+          switches: -avzr --delete
+          path: './*'
+          remote_path: '/var/www/html/website'
+          remote_host: 18.221.152.255
+          remote_user: ubuntu
+          remote_key: "${{ secrets.SSH_PRIVATE_KEY }}"
+        
+      - name: Reload NGINX on ec2
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+          ssh -i private_key.pem -o StrictHostKeyChecking=no ubuntu@18.221.152.255 \
+          "sudo systemctl reload nginx"
+
+
